@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccessWay Admin — Presidency University</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+body { margin:0; padding:0; background:var(--bg); font-family:var(--font); color:var(--text); }
+.admin-nav-link { font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:8px;transition:all 0.2s; }
+.admin-nav-link:hover{background:var(--surface2);color:var(--text);}
+.export-btn{padding:8px 18px;background:var(--teal);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;}
+.tab-row{display:flex;gap:4px;background:var(--surface2);padding:4px;border-radius:12px;margin-bottom:20px;}
+.adm-tab{flex:1;padding:9px;border:none;border-radius:9px;font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;background:transparent;color:var(--muted);transition:all 0.2s;}
+.adm-tab.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.panel{display:none;}.panel.active{display:block;}
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.filter-select{padding:8px 12px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font-family:var(--font);font-size:13px;outline:none;}
+.resolve-all{padding:8px 18px;background:var(--green);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;margin-left:auto;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:10px 12px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);}
+td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:hover td{background:var(--surface2);}
+.mini-map{width:100%;height:200px;border-radius:12px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;border:1px solid var(--border);margin-top:12px;}
+.heat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.heat-label{font-size:12px;font-weight:600;width:160px;flex-shrink:0;}
+.heat-track{flex:1;height:12px;background:var(--surface2);border-radius:6px;overflow:hidden;}
+.heat-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));border-radius:6px;}
+.heat-num{font-size:11px;font-family:var(--mono);color:var(--muted);width:40px;text-align:right;}
+.donut-wrap{display:flex;align-items:center;gap:24px;padding:8px 0;}
+.donut{width:100px;height:100px;border-radius:50%;background:conic-gradient(var(--teal) 0% 68%,var(--green) 68% 84%,var(--amber) 84% 93%,var(--coral) 93% 100%);flex-shrink:0;}
+.donut-legend{display:flex;flex-direction:column;gap:7px;}
+.dl-item{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;}
+.dl-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+.rating-dist{display:flex;flex-direction:column;gap:6px;}
+.rd-row{display:flex;align-items:center;gap:8px;font-size:12px;}
+.rd-stars{color:var(--amber);width:60px;}
+.rd-bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.rd-bar{height:100%;background:var(--amber);border-radius:4px;}
+.rd-count{width:28px;text-align:right;color:var(--muted);font-family:var(--mono);}
+</style>
+</head>
+<body>
+<div class="admin-wrap">
+
+  <!-- HEADER -->
+  <div class="admin-header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="admin-logo">Access<b>Way</b> <span>Admin</span></div>
+      <div style="font-size:11px;color:var(--muted)">Presidency University, Bengaluru</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="index.html" class="admin-nav-link">← Back to App</a>
+      <button class="export-btn" onclick="exportReport()">⬇ Export Report</button>
+      <button class="export-btn" style="background:var(--surface2);color:var(--text)" onclick="toggleTheme()">🌙</button>
+    </div>
+  </div>
+
+  <div class="admin-body">
+
+    <!-- STAT CARDS -->
+    <div class="admin-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="statUsers">—</div>
+        <div class="stat-lbl">Active Users Today</div>
+        <div class="stat-trend up" id="statUsersTrend">↑ +12% vs yesterday</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--coral)" id="statBarriers">—</div>
+        <div class="stat-lbl">Open Barrier Reports</div>
+        <div class="stat-trend dn" id="statBarriersTrend">3 unresolved today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--amber)" id="statRoutes">—</div>
+        <div class="stat-lbl">Routes Navigated</div>
+        <div class="stat-trend up">↑ +8% this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" style="color:var(--green)" id="statRating">—</div>
+        <div class="stat-lbl">Avg. Accessibility Score</div>
+        <div class="stat-trend up">↑ +0.2 vs last month</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-row">
+      <button class="adm-tab active" onclick="showPanel('reports')">🚨 Barrier Reports</button>
+      <button class="adm-tab" onclick="showPanel('usage')">📊 Usage Analytics</button>
+      <button class="adm-tab" onclick="showPanel('ratings')">⭐ Route Ratings</button>
+      <button class="adm-tab" onclick="showPanel('heatmap')">🗺 Heatmap</button>
+    </div>
+
+    <!-- BARRIER REPORTS PANEL -->
+    <div id="panel-reports" class="panel active admin-section">
+      <div class="admin-section-title">🚨 Barrier Reports
+        <span style="margin-left:auto;font-size:12px;font-weight:500;color:var(--muted)">Last 7 days</span>
+      </div>
+      <div class="filter-row">
+        <select class="filter-select" onchange="filterReports(this.value)">
+          <option>All Types</option>
+          <option>Construction</option>
+          <option>Lift Broken</option>
+          <option>No Ramp</option>
+          <option>Wet Floor</option>
+          <option>Blocked Path</option>
+        </select>
+        <select class="filter-select">
+          <option>All Status</option>
+          <option>Open</option>
+          <option>Resolved</option>
+        </select>
+        <button class="resolve-all" onclick="resolveAll()">✓ Resolve All Open</button>
+      </div>
+      <div class="table-wrap">
+        <table id="reportsTable">
+          <thead><tr><th>Type</th><th>Location</th><th>Reported</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="reportsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USAGE ANALYTICS PANEL -->
+    <div id="panel-usage" class="panel admin-section">
+      <div class="admin-section-title">📊 Usage Analytics</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em">Most Navigated Routes</div>
+          <div class="bar-chart" id="routeBarChart"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.06em">Accessibility Mode Usage</div>
+          <div class="donut-wrap">
+            <div class="donut"></div>
+            <div class="donut-legend">
+              <div class="dl-item"><div class="dl-dot" style="background:var(--teal)"></div>Standard — 68%</div>
+              <div class="dl-item"><div class="dl-dot" style="background:var(--green)"></div>Wheelchair — 16%</div>
+              <div class="dl-item"><div class="dl-dot" style="background:var(--amber)"></div>Low Vision — 9%</div>
+              <div class="dl-item"><div class="dl-dot" style="background:var(--coral)"></div>Sensory — 7%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.06em">Daily Active Users — Last 28 Days</div>
+        <div class="heatmap-grid" id="usageHeatmap"></div>
+        <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--muted)">
+          <span>Less</span>
+          <div style="display:flex;gap:3px">
+            <div style="width:12px;height:12px;border-radius:3px;background:var(--surface2)"></div>
+            <div style="width:12px;height:12px;border-radius:3px" class="heatmap-cell h1"></div>
+            <div style="width:12px;height:12px;border-radius:3px" class="heatmap-cell h2"></div>
+            <div style="width:12px;height:12px;border-radius:3px" class="heatmap-cell h3"></div>
+            <div style="width:12px;height:12px;border-radius:3px" class="heatmap-cell h4"></div>
+          </div>
+          <span>More</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RATINGS PANEL -->
+    <div id="panel-ratings" class="panel admin-section">
+      <div class="admin-section-title">⭐ Route Accessibility Ratings</div>
+      <div id="ratingsTable"></div>
+    </div>
+
+    <!-- HEATMAP PANEL -->
+    <div id="panel-heatmap" class="panel admin-section">
+      <div class="admin-section-title">🗺 Barrier Heatmap — Campus</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Aggregated barrier reports by campus zone over the last 30 days.</p>
+      <div class="bar-chart">
+        <div class="heat-row"><div class="heat-label">Engineering Block</div><div class="heat-track"><div class="heat-fill" style="width:82%"></div></div><div class="heat-num">18</div></div>
+        <div class="heat-row"><div class="heat-label">Main Gate Area</div><div class="heat-track"><div class="heat-fill" style="width:60%"></div></div><div class="heat-num">13</div></div>
+        <div class="heat-row"><div class="heat-label">Library Entrance</div><div class="heat-track"><div class="heat-fill" style="width:45%"></div></div><div class="heat-num">10</div></div>
+        <div class="heat-row"><div class="heat-label">Canteen Area</div><div class="heat-track"><div class="heat-fill" style="width:36%"></div></div><div class="heat-num">8</div></div>
+        <div class="heat-row"><div class="heat-label">Hostel Zone</div><div class="heat-track"><div class="heat-fill" style="width:27%"></div></div><div class="heat-num">6</div></div>
+        <div class="heat-row"><div class="heat-label">Admin Block</div><div class="heat-track"><div class="heat-fill" style="width:18%"></div></div><div class="heat-num">4</div></div>
+        <div class="heat-row"><div class="heat-label">Sports Complex</div><div class="heat-track"><div class="heat-fill" style="width:9%"></div></div><div class="heat-num">2</div></div>
+      </div>
+      <div class="mini-map">🗺 Live map integration available — connect to AccessWay API</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── THEME ─────────────────────────────────────────────────────
+const dark = localStorage.getItem('aw_dark') === 'true';
+if (dark) document.documentElement.setAttribute('data-theme','dark');
+
+function toggleTheme() {
+  const on = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', on ? 'light' : 'dark');
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.adm-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── LOAD DATA ─────────────────────────────────────────────────
+const BARRIER_REPORTS = [
+  { type:'🛗 Lift Broken', location:'Library, 2nd Floor', reported:'2 hrs ago', status:'open' },
+  { type:'🚧 Construction', location:'Engineering Block, North Entrance', reported:'4 hrs ago', status:'open' },
+  { type:'💧 Wet Floor', location:'Canteen Entrance', reported:'8 hrs ago', status:'open' },
+  { type:'🚫 No Ramp', location:'Law Block, East Side', reported:'1 day ago', status:'resolved' },
+  { type:'🚗 Blocked Path', location:'Parking Zone A', reported:'1 day ago', status:'resolved' },
+  { type:'🛗 Lift Broken', location:"Boys' Hostel, G Floor", reported:'2 days ago', status:'resolved' },
+  { type:'🚧 Construction', location:'Main Gate, Left Side', reported:'3 days ago', status:'resolved' },
+  { type:'💧 Wet Floor', location:'Admin Block Corridor', reported:'5 days ago', status:'resolved' },
+];
+
+const ROUTE_USAGE = [
+  { name:'Gate → Admin Block',   count:142 },
+  { name:'Admin → Library',      count:118 },
+  { name:'Gate → Canteen',       count:97  },
+  { name:'Gate → Health Centre', count:76  },
+  { name:'Admin → Hostel',       count:54  },
+  { name:'Library → Sports',     count:31  },
+];
+
+const ROUTE_RATINGS = [
+  { name:'Gate → Admin Block',   avg:4.2, count:38, dist:[2,4,8,14,10] },
+  { name:'Admin → Library',      avg:4.6, count:29, dist:[1,1,4,12,11] },
+  { name:'Gate → Canteen',       avg:3.8, count:22, dist:[2,4,7,6,3]   },
+  { name:'Gate → Health Centre', avg:4.5, count:18, dist:[0,1,3,8,6]   },
+  { name:'Admin → Hostel',       avg:3.5, count:14, dist:[2,3,4,3,2]   },
+  { name:'Library → Sports',     avg:4.1, count:10, dist:[0,1,2,5,2]   },
+];
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Animate stat counters
+  animateCount('statUsers', 0, 347, 1200);
+  animateCount('statBarriers', 0, 3, 600);
+  animateCount('statRoutes', 0, 518, 1400);
+  setTimeout(() => {
+    document.getElementById('statRating').textContent = '4.2★';
+  }, 800);
+
+  renderReports(BARRIER_REPORTS);
+  renderRouteChart();
+  renderHeatmap();
+  renderRatings();
+});
+
+function animateCount(id, from, to, dur) {
+  const el = document.getElementById(id);
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / dur, 1);
+    el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1-p,3)));
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderReports(data) {
+  document.getElementById('reportsTbody').innerHTML = data.map((r,i) => `
+    <tr id="row${i}">
+      <td><span style="font-weight:700">${r.type}</span></td>
+      <td style="color:var(--text2)">${r.location}</td>
+      <td style="color:var(--muted);font-size:12px">${r.reported}</td>
+      <td><span class="report-badge ${r.status}">${r.status === 'open' ? 'Open' : '✓ Resolved'}</span></td>
+      <td>${r.status === 'open' ? `<button class="resolve-btn" onclick="resolveRow(${i})">Resolve</button>` : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+function resolveRow(i) {
+  BARRIER_REPORTS[i].status = 'resolved';
+  renderReports(BARRIER_REPORTS);
+  const open = BARRIER_REPORTS.filter(r => r.status === 'open').length;
+  document.getElementById('statBarriers').textContent = open;
+}
+function resolveAll() { BARRIER_REPORTS.forEach(r => r.status = 'resolved'); renderReports(BARRIER_REPORTS); document.getElementById('statBarriers').textContent = '0'; }
+function filterReports(type) {
+  const filtered = type === 'All Types' ? BARRIER_REPORTS : BARRIER_REPORTS.filter(r => r.type.toLowerCase().includes(type.toLowerCase()));
+  renderReports(filtered);
+}
+
+function renderRouteChart() {
+  const max = Math.max(...ROUTE_USAGE.map(r => r.count));
+  document.getElementById('routeBarChart').innerHTML = ROUTE_USAGE.map(r => `
+    <div class="bar-row">
+      <div class="bar-name">${r.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(r.count/max*100).toFixed(0)}%"></div></div>
+      <div class="bar-val">${r.count}</div>
+    </div>`).join('');
+}
+
+function renderHeatmap() {
+  const intensities = [0,1,1,2,2,3,4,3,2,1,0,1,2,3,4,3,2,1,1,2,3,4,3,2,1,0,1,2];
+  document.getElementById('usageHeatmap').innerHTML = intensities.map(h =>
+    `<div class="heatmap-cell ${h ? 'h'+h : ''}" title="${[0,12,24,36,48][h]} users"></div>`
+  ).join('');
+}
+
+function renderRatings() {
+  document.getElementById('ratingsTable').innerHTML = ROUTE_RATINGS.map(r => `
+    <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:14px;font-weight:700">${r.name}</span>
+        <span style="color:var(--amber);font-size:14px;font-weight:800">${r.avg}★</span>
+        <span style="font-size:11px;color:var(--muted)">(${r.count} ratings)</span>
+      </div>
+      <div class="rating-dist">
+        ${[5,4,3,2,1].map((s,i) => `
+          <div class="rd-row">
+            <div class="rd-stars">${'⭐'.repeat(s)}</div>
+            <div class="rd-bar-track"><div class="rd-bar" style="width:${r.dist[4-i]/(Math.max(...r.dist)||1)*100}%"></div></div>
+            <div class="rd-count">${r.dist[4-i]}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function exportReport() {
+  const rows = [['Type','Location','Reported','Status'], ...BARRIER_REPORTS.map(r=>[r.type,r.location,r.reported,r.status])];
+  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'accessway_barriers_report.csv';
+  a.click();
+}
+</script>
+</body>
+</html>
