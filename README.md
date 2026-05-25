@@ -51,16 +51,3 @@ Users can personalize their navigation experience based on their specific needs:
 - **AI / ML:** TensorFlow.js (`@tensorflow/tfjs`), MobileNet (`@tensorflow-models/mobilenet`).
 - **Icons & Graphics:** Inline SVGs, Emojis for lightweight rendering.
 
-## 🚀 How to Run Locally
-1. Clone or download the repository.
-2. Open the folder in your preferred code editor (e.g., VS Code).
-3. Start a local development server (e.g., using VS Code's "Live Server" extension, or `python -m http.server 8000`).
-   *Note: Accessing the camera for AI Scene Analysis requires the app to be served over `localhost` or `https`.*
-4. Open `index.html` in your browser.
-
-## 📸 Presentation Ideas (For PPT)
-- **Slide 1: Problem Statement.** Traditional maps ignore stairs, broken lifts, and construction. Campuses can be hostile for differently-abled students.
-- **Slide 2: The Solution.** AccessWay: An AI-first navigator that understands the physical world and individual user needs.
-- **Slide 3: Core Technology.** Showcase the TensorFlow.js MobileNet integration functioning live in the browser without backend latency.
-- **Slide 4: Crowdsourcing & Admin.** Show how user reports (Barrier Reporting) feed into the Admin Dashboard to help campus management proactively fix infrastructure.
-- **Slide 5: Impact.** Promoting independence, safety, and a truly inclusive educational environment at Presidency University.
